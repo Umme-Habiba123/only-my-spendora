@@ -34,7 +34,7 @@ const services = [
   {
     title: "Secure Cloud Storage",
     desc: "Your expense data stays protected with secure cloud synchronization and backups.",
-    icon: <FaLock />,
+    icon: <FaLock / >,
   },
   {
     title: "Multi Device Access",
