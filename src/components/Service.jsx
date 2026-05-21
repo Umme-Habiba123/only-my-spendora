@@ -13,7 +13,7 @@ import { useTheme } from "../context/ThemeContext";
 const services = [
   {
     title: "Expense Tracking",
-    desc: "Track your daily, weekly, and monthly expenses with smart categorization and real-time updates.",
+    desc: "Track your daily, weekly, and monthly expenses with smart categorization and real-time updates. ",
     icon: <FaWallet />,
   },
   {
