@@ -1,76 +1,133 @@
-import { createContext, useContext, useState } from "react";
+// context/ExpenseContext.jsx
+import { createContext, useContext, useState, useCallback } from "react";
+import useAuth from "../hooks/useAuth";
+import { API_URL } from "../constants";
 
-const ExpenseCtx = createContext(null);
-
-const SEED = [
-  { id: 1,  desc: "Pizza Hut",       amt: 15,   type: "expense", cat: "Food",          date: "2025-05-10" },
-  { id: 2,  desc: "Spotify",          amt: 9,    type: "expense", cat: "Entertainment", date: "2025-05-09" },
-  { id: 3,  desc: "Uber",             amt: 12,   type: "expense", cat: "Transport",     date: "2025-05-08" },
-  { id: 4,  desc: "Gym membership",   amt: 30,   type: "expense", cat: "Sport",         date: "2025-05-07" },
-  { id: 5,  desc: "Salary",           amt: 3200, type: "income",  cat: "Other",         date: "2025-05-01" },
-  { id: 6,  desc: "Electricity bill", amt: 55,   type: "expense", cat: "Bills",         date: "2025-04-28" },
-  { id: 7,  desc: "Groceries",        amt: 48,   type: "expense", cat: "Food",          date: "2025-04-25" },
-  { id: 8,  desc: "Netflix",          amt: 14,   type: "expense", cat: "Entertainment", date: "2025-04-20" },
-  { id: 9,  desc: "Pharmacy",         amt: 22,   type: "expense", cat: "Health",        date: "2025-04-18" },
-  { id: 10, desc: "Freelance",        amt: 800,  type: "income",  cat: "Other",         date: "2025-04-15" },
-  { id: 11, desc: "Zara",             amt: 65,   type: "expense", cat: "Shopping",      date: "2025-04-10" },
-  { id: 12, desc: "Bus pass",         amt: 18,   type: "expense", cat: "Transport",     date: "2025-04-05" },
-];
+const ExpenseContext = createContext();
 
 export function ExpenseProvider({ children }) {
-  const [expenses, setExpenses] = useState(SEED);
+  // const { user } = useAuth(); // ← Firebase user থেকে uid ও email নেওয়া হচ্ছে
 
-  function addExpense(entry) {
-    setExpenses(prev => [{ ...entry, id: Date.now() }, ...prev]);
-  }
+  const auth = useAuth();
+  const user = auth?.user ?? null;
 
-  function deleteExpense(id) {
-    setExpenses(prev => prev.filter(e => e.id !== id));
-  }
+  const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  /* ── derived helpers ── */
-  const totalIncome  = expenses.filter(e => e.type === "income").reduce((s, e) => s + e.amt, 0);
-  const totalExpense = expenses.filter(e => e.type === "expense").reduce((s, e) => s + e.amt, 0);
-  const balance      = totalIncome - totalExpense;
+  // ── Fetch expenses (with optional filters) ──────────────────────────────
+  const fetchExpenses = useCallback(
+    async ({ type, cat, search } = {}) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const params = new URLSearchParams();
 
-  const now = new Date();
-  const monthlyExpense = expenses
-    .filter(e => e.type === "expense" && new Date(e.date).getMonth() === now.getMonth())
-    .reduce((s, e) => s + e.amt, 0);
+        // ✅ Always send uid so each user sees only their data
+        if (user?.uid) params.set("uid", user.uid);
+        else if (user?.email) params.set("email", user.email);
 
-  /** spending per category (expenses only) */
-  function byCategory() {
-    const map = {};
-    expenses.filter(e => e.type === "expense").forEach(e => {
-      map[e.cat] = (map[e.cat] || 0) + e.amt;
+        if (type && type !== "All") params.set("type", type);
+        if (cat && cat !== "All") params.set("cat", cat);
+        if (search) params.set("search", search);
+
+        const res = await fetch(`${API_URL}/expenses?${params}`);
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        const data = await res.json();
+        setExpenses(data);
+      } catch (err) {
+        setError(err.message);
+        console.error("fetchExpenses error:", err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user],
+  );
+
+  // ── Add expense ──────────────────────────────────────────────────────────
+  const addExpense = useCallback(
+    async ({ desc, amt, type, cat, date }) => {
+      const res = await fetch(`${API_URL}/expenses`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          desc,
+          amt,
+          type,
+          cat,
+          date,
+        
+          uid: user?.uid || null,
+          email: user?.email || null,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to add expense");
+      }
+
+      const newExpense = await res.json();
+      // Optimistically prepend to list
+      setExpenses((prev) => [newExpense, ...prev]);
+      return newExpense;
+    },
+    [user],
+  );
+
+  // ── Delete expense ───────────────────────────────────────────────────────
+  const deleteExpense = useCallback(async (id) => {
+    const res = await fetch(`${API_URL}/expenses/${id}`, {
+      method: "DELETE",
     });
-    return map;
-  }
 
-  /** spending per month for last N months */
-  function byMonth(n = 6, type = "expense") {
-    return Array.from({ length: n }, (_, i) => {
-      const d = new Date(now.getFullYear(), now.getMonth() - (n - 1) + i, 1);
-      const total = expenses
-        .filter(e =>
-          e.type === type &&
-          new Date(e.date).getMonth()    === d.getMonth() &&
-          new Date(e.date).getFullYear() === d.getFullYear()
-        )
-        .reduce((s, e) => s + e.amt, 0);
-      return { month: d.getMonth(), year: d.getFullYear(), total };
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "Failed to delete expense");
+    }
+
+    // Remove from local state immediately
+    setExpenses((prev) => prev.filter((e) => e._id !== id));
+  }, []);
+
+  // ── Update expense ───────────────────────────────────────────────────────
+  const updateExpense = useCallback(async (id, updates) => {
+    const res = await fetch(`${API_URL}/expenses/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
     });
-  }
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || "Failed to update expense");
+    }
+
+    const updated = await res.json();
+    setExpenses((prev) => prev.map((e) => (e._id === id ? updated : e)));
+    return updated;
+  }, []);
 
   return (
-    <ExpenseCtx.Provider value={{
-      expenses, addExpense, deleteExpense,
-      totalIncome, totalExpense, balance, monthlyExpense,
-      byCategory, byMonth,
-    }}>
+    <ExpenseContext.Provider
+      value={{
+        expenses,
+        loading,
+        error,
+        fetchExpenses,
+        addExpense,
+        deleteExpense,
+        updateExpense,
+      }}
+    >
       {children}
-    </ExpenseCtx.Provider>
+    </ExpenseContext.Provider>
   );
 }
 
-export const useExpenses = () => useContext(ExpenseCtx);
+export function useExpenses() {
+  const ctx = useContext(ExpenseContext);
+  if (!ctx) throw new Error("useExpenses must be used inside ExpenseProvider");
+  return ctx;
+}

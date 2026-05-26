@@ -1,16 +1,25 @@
-# React + Vite
+# web-development-bootcamp-may-2026
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Marking System
+- Main Project
+- ORM (BONUS)
+- Visual Look
+- Core Functionalities
+- Difficulty
+- GitHub
+- Deployment
+- Documentaion
 
-Currently, two official plugins are available:
+## Bootcamp Certficate
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Interview Process
+- Shortlist
+- Online Interview
+- Offer Letter
 
-## React Compiler
+## Internship Duration
+- 1 to 6 Months -> 1 Month
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Internship Type
+- Paid
+- 2 Week Internship (Unpaid)
