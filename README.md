@@ -117,14 +117,6 @@ cd server
 npm install
 ```
 
-Create a `.env` file in `/server`:
-
-```env
-DB_USER=your_mongodb_username
-DB_PASS=your_mongodb_password
-CLIENT_URL=http://localhost:5173
-PORT=5000
-```
 
 ```bash
 npm start
@@ -138,18 +130,7 @@ cd client
 npm install
 ```
 
-Create a `.env` file in `/client`:
 
-```env
-VITE_API_URL=http://localhost:5000
-
-VITE_apiKey=your_firebase_api_key
-VITE_authDomain=your_project.firebaseapp.com
-VITE_projectId=your_project_id
-VITE_storageBucket=your_project.appspot.com
-VITE_messagingSenderId=your_sender_id
-VITE_appId=your_app_id
-```
 
 ```bash
 npm run dev
