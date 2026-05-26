@@ -1,130 +1,167 @@
-# 💸 Spendora — Personal Expense Tracker
+# Spendora — Personal Expense Tracker
 
-একটি ব্যক্তিগত খরচ ট্র্যাকার অ্যাপ যেখানে প্রতিটি user তার নিজের income ও expense আলাদাভাবে track করতে পারে।
+Spendora is a full-stack personal finance app that lets each user track their own income and expenses in one clean, organized dashboard. Every user sees only their own data — nothing shared, nothing mixed.
 
----
-
-## 🌐 Live Demo
-
-| Platform | URL |
-|----------|-----|
-| Frontend (Netlify) | https://my-spendora-f1d7e3.netlify.app |
-| Backend (Vercel)   | https://my-spendora-server.vercel.app  |
+![React](https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react)
+![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=flat-square&logo=node.js)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb)
+![Firebase](https://img.shields.io/badge/Firebase-Auth-FFCA28?style=flat-square&logo=firebase)
 
 ---
 
-## ✨ Features
+## Live Demo
 
-- 🔐 **Firebase Authentication** — Email/Password এবং Google Login
-- 👤 **Per-user Data** — প্রতিটি user শুধু তার নিজের expense দেখতে পারে
-- ➕ **Expense & Income Add** — Category, date, description সহ
-- 📊 **Charts & Analytics** — Monthly spending trend, category donut chart, income vs expense
-- 🗂️ **Transactions Page** — Search, filter by category, delete
-- 👤 **Profile Page** — Avatar upload, bio, social links, account details
-- 🌙 **Dark / Light Mode** — Theme toggle
-- 📱 **Fully Responsive** — Mobile, tablet, desktop সব জায়গায় কাজ করে
+| | URL |
+|---|---|
+| Frontend | https://my-spendora-f1d7e3.netlify.app |
+| Backend API | https://my-spendora-server.vercel.app |
 
 ---
 
-## 🛠️ Tech Stack
+## Features
+
+- **Authentication** — Sign up and log in with Email/Password or Google via Firebase
+- **Per-user isolation** — Each user's expenses are stored with their unique `uid`; no one can see anyone else's data
+- **Add transactions** — Log expenses or income with a description, amount, category, and date
+- **Dashboard overview** — Balance, monthly spending, total income, and transaction count at a glance
+- **Charts & analytics** — Monthly spending trend, category donut breakdown, income vs. expense comparison
+- **Transaction management** — Search by keyword, filter by category, and delete entries
+- **Profile page** — Update display name, bio, occupation, location, social links, and avatar
+- **Dark / Light mode** — Persisted theme toggle
+- **Fully responsive** — Works on mobile, tablet, and desktop
+
+---
+
+## Tech Stack
 
 ### Frontend
-| Technology | কাজ |
-|------------|-----|
+
+| Technology | Purpose |
+|---|---|
 | React 18 | UI framework |
-| Vite | Build tool |
+| Vite | Build tooling |
 | React Router v6 | Client-side routing |
-| Firebase Auth | Login / Logout |
-| Firestore | User profile data |
-| Firebase Storage | Avatar upload |
-| Framer Motion | Animations |
+| Firebase Auth | User authentication |
+| Firestore | Profile data storage |
+| Firebase Storage | Avatar image uploads |
+| Framer Motion | Page and component animations |
 | React Icons | Icon library |
-| React Helmet Async | Page titles |
+| React Helmet Async | Dynamic page titles |
 
 ### Backend
-| Technology | কাজ |
-|------------|-----|
+
+| Technology | Purpose |
+|---|---|
 | Node.js + Express | REST API server |
-| MongoDB Atlas | Database |
-| Mongoose / Native Driver | DB queries |
-| CORS | Cross-origin requests |
-| dotenv | Environment variables |
+| MongoDB Atlas | Cloud database |
+| MongoDB Node Driver | Database queries |
+| CORS | Cross-origin request handling |
+| dotenv | Environment variable management |
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 spendora/
-├── client/                   # Frontend (React + Vite)
+├── client/                        # React + Vite frontend
 │   ├── src/
 │   │   ├── components/
-│   │   │   └── PrivateRoute.jsx      # Login ছাড়া ঢোকা যাবে না
+│   │   │   └── PrivateRoute.jsx   # Redirects unauthenticated users to /login
 │   │   ├── context/
-│   │   │   ├── AuthContext.jsx       # Firebase user state
-│   │   │   ├── ExpenseContext.jsx    # Expense CRUD
-│   │   │   └── ThemeContext.jsx      # Dark/light theme
+│   │   │   ├── AuthContext.jsx    # Firebase auth state provider
+│   │   │   ├── ExpenseContext.jsx # Expense CRUD operations
+│   │   │   └── ThemeContext.jsx   # Dark/light theme provider
 │   │   ├── hooks/
-│   │   │   └── userProfile.js        # Profile read/write hook
+│   │   │   └── userProfile.js     # Read and write user profile data
 │   │   ├── pages/
-│   │   │   ├── dashboard/
-│   │   │   │   ├── Dashboard.jsx     # Stats + charts overview
-│   │   │   │   ├── Overview.jsx      # Greeting + summary cards
-│   │   │   │   ├── AddExpense.jsx    # Expense/income form
-│   │   │   │   ├── Transactions.jsx  # List + search + delete
-│   │   │   │   ├── Charts.jsx        # Visual analytics
-│   │   │   │   └── Profile.jsx       # User profile editor
-│   │   │   └── DashboardLayout.jsx   # Sidebar + topbar layout
-│   │   ├── constants.js              # Categories, months
-│   │   └── main.jsx                  # Router + providers
-│   └── .env                          # Frontend env variables
+│   │   │   ├── DashboardLayout.jsx
+│   │   │   └── dashboard/
+│   │   │       ├── Overview.jsx       # Financial summary + greeting
+│   │   │       ├── Dashboard.jsx      # Stats cards + charts
+│   │   │       ├── AddExpense.jsx     # Add expense / income form
+│   │   │       ├── Transactions.jsx   # Full transaction list
+│   │   │       ├── Charts.jsx         # Visual analytics
+│   │   │       └── Profile.jsx        # User profile editor
+│   │   ├── constants.js           # Category definitions, month names
+│   │   └── main.jsx               # App entry — router + context providers
+│   └── .env
 │
-└── server/                   # Backend (Express)
-    ├── server.js             # All API routes
-    ├── vercel.json           # Vercel deployment config
-    └── .env                  # Backend env variables
+└── server/                        # Node.js + Express backend
+    ├── server.js                  # All API route definitions
+    ├── vercel.json                # Vercel serverless config
+    └── .env
 ```
 
 ---
 
+## Getting Started
 
----
+### Prerequisites
 
-## 🚀 Local এ Run করা
+- Node.js 18+
+- A MongoDB Atlas cluster
+- A Firebase project with Auth and Firestore enabled
 
-### Backend
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Umme-Habiba123/spendora.git
+cd spendora
+```
+
+### 2. Set up the backend
+
 ```bash
 cd server
 npm install
-npm start
-# Server চলবে http://localhost:5000
 ```
 
-### Frontend
+Create a `.env` file in `/server`:
+
+```env
+DB_USER=your_mongodb_username
+DB_PASS=your_mongodb_password
+CLIENT_URL=http://localhost:5173
+PORT=5000
+```
+
+```bash
+npm start
+# API running at http://localhost:5000
+```
+
+### 3. Set up the frontend
+
 ```bash
 cd client
 npm install
+```
+
+Create a `.env` file in `/client`:
+
+```env
+VITE_API_URL=http://localhost:5000
+
+VITE_apiKey=your_firebase_api_key
+VITE_authDomain=your_project.firebaseapp.com
+VITE_projectId=your_project_id
+VITE_storageBucket=your_project.appspot.com
+VITE_messagingSenderId=your_sender_id
+VITE_appId=your_app_id
+```
+
+```bash
 npm run dev
-# App চলবে http://localhost:5173
+# App running at http://localhost:5173
 ```
 
 ---
 
-## 🔒 Authentication Flow
+## How Per-User Data Works
 
-```
-User আসে
-    ↓
-Login আছে? → না → /login page-এ redirect
-    ↓ হ্যাঁ
-Dashboard দেখায়
-    ↓
-সব API call-এ uid পাঠায়
-    ↓
-Backend শুধু সেই uid-এর data return করে
-```
+Every expense is saved to MongoDB with the authenticated user's Firebase `uid`:
 
-প্রতিটি expense MongoDB-তে `uid` field সহ save হয়:
 ```json
 {
   "desc": "Lunch",
@@ -132,53 +169,98 @@ Backend শুধু সেই uid-এর data return করে
   "type": "expense",
   "cat": "Food",
   "date": "2025-05-26",
-  "uid": "firebase_user_uid_here",
+  "uid": "firebase_uid_abc123",
   "createdAt": "2025-05-26T10:00:00.000Z"
 }
 ```
 
-Backend সব query-তে `uid` দিয়ে filter করে, তাই একজন user আরেকজনের data দেখতে পারে না।
+Every API query filters by `uid`, so users can only ever read and modify their own records.
+
+```
+User visits the app
+        ↓
+Firebase checks auth state
+        ↓
+Not logged in? → Redirect to /login
+        ↓
+Logged in? → Load dashboard
+        ↓
+All API requests include uid
+        ↓
+Server filters MongoDB by uid
+        ↓
+User sees only their own data
+```
 
 ---
 
-## 📡 API Endpoints
+## API Reference
 
-| Method | Endpoint | কাজ |
-|--------|----------|-----|
-| `GET` | `/expenses?uid=` | সব expense আনো |
-| `GET` | `/expenses/summary/monthly?uid=` | এই মাসের summary |
-| `GET` | `/expenses/recent?uid=&limit=5` | সাম্প্রতিক transactions |
-| `POST` | `/expenses` | নতুন expense যোগ করো |
-| `PATCH` | `/expenses/:id` | expense আপডেট করো |
-| `DELETE` | `/expenses/:id` | expense মুছে ফেলো |
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/expenses?uid=` | Fetch all expenses for a user |
+| `GET` | `/expenses/summary/monthly?uid=` | Current month income, expense, and count |
+| `GET` | `/expenses/recent?uid=&limit=5` | Most recent transactions |
+| `POST` | `/expenses` | Create a new expense or income entry |
+| `PATCH` | `/expenses/:id` | Update an existing entry |
+| `DELETE` | `/expenses/:id` | Delete an entry |
 
 ---
 
-## 🚢 Deployment
+## Deployment
 
-### Vercel (Backend)
-1. `vercel.json` root-এ রাখো
-2. Vercel Dashboard → Environment Variables-এ `DB_USER`, `DB_PASS`, `CLIENT_URL` set করো
-3. `git push` করলে auto deploy হবে
+### Backend — Vercel
 
-### Netlify (Frontend)
-1. Netlify Dashboard → Environment Variables-এ `VITE_API_URL` এবং সব Firebase keys set করো
-2. Build command: `npm run build`
-3. Publish directory: `dist`
+Add a `vercel.json` file to the server root:
+
+```json
+{
+  "version": 2,
+  "builds": [{ "src": "server.js", "use": "@vercel/node" }],
+  "routes": [{ "src": "/(.*)", "dest": "server.js" }]
+}
+```
+
+Set these environment variables in your Vercel project settings:
+
+```
+DB_USER        → your MongoDB username
+DB_PASS        → your MongoDB password
+CLIENT_URL     → your Netlify frontend URL
+```
+
+### Frontend — Netlify
+
+Set these environment variables in your Netlify site settings:
+
+```
+VITE_API_URL             → your Vercel backend URL
+VITE_apiKey              → Firebase API key
+VITE_authDomain          → Firebase auth domain
+VITE_projectId           → Firebase project ID
+VITE_storageBucket       → Firebase storage bucket
+VITE_messagingSenderId   → Firebase messaging sender ID
+VITE_appId               → Firebase app ID
+```
+
+Build settings:
+- **Build command:** `npm run build`
+- **Publish directory:** `dist`
 
 ### MongoDB Atlas
-- Network Access → `0.0.0.0/0` allow করো (Vercel-এর IP dynamic)
+
+Go to **Network Access** and allow connections from anywhere (`0.0.0.0/0`) since Vercel uses dynamic IP addresses.
 
 ---
 
-## 👨‍💻 Author
+## Author
 
-তোমার নাম এখানে লেখো
-- GitHub: [Umme-Habiba123] ( https://github.com/Umme-Habiba123 )
-- LinkedIn: [ Mahiya Rahman ]( https://www.linkedin.com/in/mahiya-rehman/ )
+**Mahiya Rahman**
+- GitHub: [@Umme-Habiba123](https://github.com/Umme-Habiba123)
+- LinkedIn: [Mahiya Rahman](https://www.linkedin.com/in/mahiya-rehman/)
 
 ---
 
-## 📄 License
+## License
 
-MIT License — ইচ্ছামতো use করো।
+MIT License — free to use, modify, and distribute.
